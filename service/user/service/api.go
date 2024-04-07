@@ -39,7 +39,7 @@ func (s *service) Register(ctx context.Context, username, password string) (id u
 	if result.Error == nil {
 		return 0, "", fmt.Errorf("username %s already exists", username)
 	}
-	cryptPass, err := cryptx.PasswordEncrypt("hello", password)
+	cryptPass, err := cryptx.PasswordEncrypt("HWVOFkGgPTryzICwd7qnJaZR9KQ2i8xe", password)
 	if err != nil {
 		return 0, "", fmt.Errorf("could not encrypt password")
 	}
@@ -48,7 +48,7 @@ func (s *service) Register(ctx context.Context, username, password string) (id u
 		Password: cryptPass,
 	}
 	result = s.db.Create(&user)
-	if result.Error == nil {
+	if result.Error != nil {
 		return 0, "", result.Error
 	}
 	token, _ = jwtx.GetToken("hello", time.Now().Unix(), 60*60, int64(user.ID))
