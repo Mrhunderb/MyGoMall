@@ -21,9 +21,9 @@ func main() {
 	c := pb.NewUserClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	r, err := c.Register(ctx, &pb.RegisterRequest{Username: "abc", Password: "123"})
+	r, err := c.UserInfo(ctx, &pb.UserInfoRequest{Id: 1})
 	if err != nil {
-		log.Fatalf("could not greet: %v", err)
+		log.Fatalf("%v", err)
 	}
-	log.Printf("id: %d, token: %s\n", r.Id, r.Token)
+	log.Printf("id: %d, name: %s\n", r.Id, r.Username)
 }

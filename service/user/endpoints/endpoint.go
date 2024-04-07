@@ -46,20 +46,20 @@ func makeRegisterEndpoint(s service.UserService) endpoint.Endpoint {
 func makeInfoEndpoint(s service.UserService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(InfoRequest)
-		info, err := s.Info(ctx, req.ID)
+		user, err := s.Info(ctx, req.ID)
 		if err != nil {
 			return InfoResponse{
 				ID:       0,
-				Username: info,
+				Username: "",
 				Gender:   0,
-				Phone:    info,
-			}, nil
+				Phone:    "",
+			}, err
 		}
 		return InfoResponse{
-			ID:       0,
-			Username: info,
-			Gender:   0,
-			Phone:    info,
+			ID:       uint64(user.ID),
+			Username: user.Username,
+			Gender:   int32(user.Gender),
+			Phone:    user.Phone,
 		}, nil
 	}
 }

@@ -51,7 +51,7 @@ func (s *gRPCServer) Register(ctx context.Context, req *pb.RegisterRequest) (*pb
 	return resp.(*pb.RegisterResponse), nil
 }
 
-func (s *gRPCServer) Info(ctx context.Context, req *pb.UserInfoRequest) (*pb.UserInfoResponse, error) {
+func (s *gRPCServer) UserInfo(ctx context.Context, req *pb.UserInfoRequest) (*pb.UserInfoResponse, error) {
 	_, resp, err := s.info.ServeGRPC(ctx, req)
 	if err != nil {
 		return nil, err

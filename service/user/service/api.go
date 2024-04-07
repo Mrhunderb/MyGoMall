@@ -12,6 +12,10 @@ import (
 	"gorm.io/gorm"
 )
 
+const (
+	salt = "HWVOFkGgPTryzICwd7qnJaZR9KQ2i8xe"
+)
+
 type service struct {
 	logger zap.Logger
 	db     gorm.DB
@@ -20,7 +24,7 @@ type service struct {
 type UserService interface {
 	Login(ctx context.Context, username, password string) (uint, string, error)
 	Register(ctx context.Context, username, password string) (uint, string, error)
-	Info(ctx context.Context, id uint64) (string, error)
+	Info(ctx context.Context, id uint64) (*model.User, error)
 }
 
 func NewUserService(logger zap.Logger, db gorm.DB) UserService {
@@ -30,8 +34,19 @@ func NewUserService(logger zap.Logger, db gorm.DB) UserService {
 	}
 }
 
-func (s *service) Login(ctx context.Context, username, password string) (uint, string, error) {
-	return 0, "", nil
+func (s *service) Login(ctx context.Context, username, password string) (id uint, token string, err error) {
+	var user model.User
+	result := s.db.First(&user, "username = ?", username)
+	if result.Error != nil {
+		return 0, "", fmt.Errorf("could not find user with username %s", username)
+	}
+
+	if !cryptx.PasswordVerify(salt, password, user.Password) {
+		return 0, "", fmt.Errorf("password invalid")
+	}
+
+	token, _ = jwtx.GetToken("hello", time.Now().Unix(), 60*60, int64(user.ID))
+	return user.ID, token, nil
 }
 
 func (s *service) Register(ctx context.Context, username, password string) (id uint, token string, err error) {
@@ -39,7 +54,7 @@ func (s *service) Register(ctx context.Context, username, password string) (id u
 	if result.Error == nil {
 		return 0, "", fmt.Errorf("username %s already exists", username)
 	}
-	cryptPass, err := cryptx.PasswordEncrypt("HWVOFkGgPTryzICwd7qnJaZR9KQ2i8xe", password)
+	cryptPass, err := cryptx.PasswordEncrypt(salt, password)
 	if err != nil {
 		return 0, "", fmt.Errorf("could not encrypt password")
 	}
@@ -55,6 +70,11 @@ func (s *service) Register(ctx context.Context, username, password string) (id u
 	return user.ID, token, nil
 }
 
-func (s *service) Info(ctx context.Context, id uint64) (string, error) {
-	return "", nil
+func (s *service) Info(ctx context.Context, id uint64) (*model.User, error) {
+	var user model.User
+	result := s.db.First(&user, id)
+	if result.Error != nil {
+		return nil, fmt.Errorf("could not find user with id %d", id)
+	}
+	return &user, nil
 }

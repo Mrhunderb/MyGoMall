@@ -14,5 +14,6 @@ func PasswordEncrypt(salt, password string) (string, error) {
 
 func PasswordVerify(salt, password, hash string) bool {
 	dk, _ := scrypt.Key([]byte(password), []byte(salt), 1<<15, 8, 1, 32)
-	return string(dk) == hash
+	encodedKey := base64.StdEncoding.EncodeToString(dk)
+	return encodedKey == hash
 }
