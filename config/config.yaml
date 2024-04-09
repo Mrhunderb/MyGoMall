@@ -1,0 +1,10 @@
+MySQL:
+  Host: localhost
+  Port: 3307
+  Database: mygomall
+  User: root
+  Password: 886364
+
+Etcd:
+  Host: localhost
+  Port: 2379
