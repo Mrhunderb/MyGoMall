@@ -7,14 +7,14 @@ import (
 	"github.com/go-kit/kit/endpoint"
 )
 
-type Endpoints struct {
+type UserEndpoint struct {
 	Login    endpoint.Endpoint
 	Register endpoint.Endpoint
 	Info     endpoint.Endpoint
 }
 
-func MakeEndpoints(s service.UserService) Endpoints {
-	return Endpoints{
+func MakeEndpoints(s service.UserService) UserEndpoint {
+	return UserEndpoint{
 		Login:    makeLoginEndpoint(s),
 		Register: makeRegisterEndpoint(s),
 		Info:     makeInfoEndpoint(s),
