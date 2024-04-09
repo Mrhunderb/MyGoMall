@@ -22,10 +22,9 @@ import (
 	"google.golang.org/grpc"
 )
 
+var ServiceName = "user"
+
 func RunUserService(port string) {
-	var (
-		serverName = "user"
-	)
 
 	var (
 		userDB = viper.GetString("MySQL.User")
@@ -69,7 +68,7 @@ func RunUserService(port string) {
 
 	// Register service to etcd
 	register := etcdv3.NewRegistrar(etdcClient, etcdv3.Service{
-		Key:   fmt.Sprintf("/services/%s/%s:%s", serverName, ip, port),
+		Key:   fmt.Sprintf("/services/%s/%s:%s", ServiceName, ip, port),
 		Value: fmt.Sprintf("%s:%s", ip, port),
 	}, log.NewJSONLogger(os.Stdout))
 

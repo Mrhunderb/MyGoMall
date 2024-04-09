@@ -5,6 +5,11 @@ MySQL:
   User: root
   Password: 886364
 
+Redis:
+  Host: localhost
+  Port: 6379
+  Password: 886364
+
 Etcd:
   Host: localhost
   Port: 2379

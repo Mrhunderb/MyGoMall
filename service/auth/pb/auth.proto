@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "service/auth/pb";
+
+service AuthService {
+    rpc GetToken(GetTokenRequset) returns (Token);
+    rpc VerifyToken(Token) returns (VerifyTokenResponse);
+}
+
+message GetTokenRequset {
+    uint64 userId = 1;
+}
+
+message Token {
+    string token = 1;
+}
+
+message VerifyTokenResponse {
+    bool valid = 1;
+}
