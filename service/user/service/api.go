@@ -63,7 +63,7 @@ func (s *service) Login(ctx context.Context, username, password string) (id uint
 		zap.String("username", username),
 		zap.Time("time", time.Now()),
 	)
-	token, _ = jwtx.GetToken("hello", time.Now().Unix(), 60*60, int64(user.ID))
+	token, _ = jwtx.GetToken("hello", time.Now().Unix(), 60*60, uint64(user.ID))
 	return user.ID, token, nil
 }
 
@@ -102,7 +102,7 @@ func (s *service) Register(ctx context.Context, username, password string) (id u
 		)
 		return 0, "", result.Error
 	}
-	token, _ = jwtx.GetToken("hello", time.Now().Unix(), 60*60, int64(user.ID))
+	token, _ = jwtx.GetToken("hello", time.Now().Unix(), 60*60, uint64(user.ID))
 	s.logger.Info(
 		"user register success",
 		zap.String("method", "Register"),

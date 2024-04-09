@@ -2,6 +2,9 @@ package service
 
 import (
 	"context"
+	"fmt"
+	"mygomall/common/jwtx"
+	"time"
 
 	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
@@ -25,11 +28,16 @@ func NewAuthService(logger zap.Logger, rdb redis.Client) AuthService {
 }
 
 func (s *service) GetToken(ctx context.Context, id uint64) (string, error) {
-	s.logger.Info("get token")
-	return "token", nil
+	now := time.Now().Unix()
+	expire := time.Second * 3600
+	token, err := jwtx.GetToken("", now, int64(expire), id)
+	if err != nil {
+		return "", err
+	}
+	s.rdb.Set(ctx, fmt.Sprintf("%d", id), token, expire)
+	return token, nil
 }
 
 func (s *service) VerifyToken(ctx context.Context, token string) (bool, error) {
-	s.logger.Info("verify token")
-	return true, nil
+	return jwtx.IsExpired(token, ""), nil
 }

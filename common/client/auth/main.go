@@ -43,9 +43,11 @@ func main() {
 	c := pb.NewAuthServiceClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	r, err := c.GetToken(ctx, &pb.GetTokenRequest{UserId: 1})
+	token := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjM2MDE3MTI2NzI3OTksImlhdCI6MTcxMjY3Mjc5OSwidWlkIjoxfQ.-zzv5t8NbfMPkpKi1z5ahnPcl7aGPUmlffWs_pa3H0U"
+	// r, err := c.GetToken(ctx, &pb.GetTokenRequest{UserId: 1})
+	r, err := c.VerifyToken(ctx, &pb.Token{Token: token})
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
-	log.Printf("token: %s", r.Token)
+	log.Printf("valid: %v", r.Valid)
 }

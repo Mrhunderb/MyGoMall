@@ -9,7 +9,7 @@ func TestGetToken(t *testing.T) {
 	key := "mySecretKey"
 	iat := time.Now().Unix()
 	second := int64(1)
-	uid := int64(123)
+	uid := uint64(123)
 
 	_, err := GetToken(key, iat, second, uid)
 	if err != nil {
@@ -21,7 +21,7 @@ func TestIsExpired(t *testing.T) {
 	key := "mySecretKey"
 	iat := time.Now().Unix()
 	second := int64(1)
-	uid := int64(123)
+	uid := uint64(123)
 
 	token, err := GetToken(key, iat, second, uid)
 	if err != nil {

@@ -4,7 +4,7 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-func GetToken(key string, iat, second, uid int64) (string, error) {
+func GetToken(key string, iat, second int64, uid uint64) (string, error) {
 	claims := jwt.MapClaims{
 		"uid": uid,
 		"exp": iat + second,
