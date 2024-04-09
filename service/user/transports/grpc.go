@@ -15,7 +15,7 @@ type gRPCServer struct {
 	info     grpc.Handler
 }
 
-func NewGRPCServer(endpoints endpoints.UserEndpoint) pb.UserServer {
+func NewUserGRPCServer(endpoints endpoints.UserEndpoint) pb.UserServer {
 	return &gRPCServer{
 		login: grpc.NewServer(
 			endpoints.Login,

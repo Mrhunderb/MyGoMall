@@ -1,13 +1,12 @@
-package user
+package auth
 
 import (
 	"context"
 	"fmt"
-	"mygomall/common/db"
-	"mygomall/service/user/endpoints"
-	"mygomall/service/user/pb"
-	"mygomall/service/user/service"
-	"mygomall/service/user/transports"
+	"mygomall/service/auth/endpoints"
+	"mygomall/service/auth/pb"
+	"mygomall/service/auth/service"
+	"mygomall/service/auth/transports"
 	"mygomall/utils"
 	"net"
 	"os"
@@ -17,21 +16,20 @@ import (
 
 	"github.com/go-kit/kit/sd/etcdv3"
 	"github.com/go-kit/log"
+	"github.com/redis/go-redis/v9"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 )
 
-var ServiceName = "user"
+var ServiceName = "auth"
 
-func RunUserService(port string) {
+func RunAuthService(port string) {
 
 	var (
-		userDB = viper.GetString("MySQL.User")
-		passDB = viper.GetString("MySQL.Password")
-		hostDB = viper.GetString("MySQL.Host")
-		portDB = viper.GetString("MySQL.Port")
-		nameDB = viper.GetString("MySQL.Database")
+		redisHost = viper.GetString("Redis.Host")
+		redisPort = viper.GetString("Redis.Port")
+		redisPass = viper.GetString("Redis.Password")
 	)
 
 	var (
@@ -41,16 +39,18 @@ func RunUserService(port string) {
 
 	logger := zap.NewExample()
 
-	// Connect to MySQL
-	db, err := db.Connect(userDB, passDB, hostDB, portDB, nameDB)
-	if err != nil {
-		panic(err)
-	}
-	logger.Info("database connected")
+	// Connect to Redis
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     redisHost + ":" + redisPort,
+		Password: redisPass,
+		DB:       0,
+	})
+	logger.Info("redis connected")
 
-	svs := service.NewUserService(*logger, *db)
+	// Create service
+	svs := service.NewAuthService(*logger, *rdb)
 	endpoint := endpoints.MakeEndpoints(svs)
-	grpcServer := transports.NewUserGRPCServer(endpoint)
+	grpcServer := transports.NewAuthGRPCServer(endpoint)
 
 	// Connect to etcd
 	etdcClient, err := etcdv3.NewClient(
@@ -92,7 +92,7 @@ func RunUserService(port string) {
 	}
 	go func() {
 		baseServer := grpc.NewServer()
-		pb.RegisterUserServer(baseServer, grpcServer)
+		pb.RegisterAuthServiceServer(baseServer, grpcServer)
 		logger.Info("server started", zap.String("address", fmt.Sprintf(":%s", port)))
 		err = baseServer.Serve(grpcListener)
 		if err != nil {

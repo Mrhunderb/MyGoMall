@@ -8,7 +8,7 @@ MySQL:
 Redis:
   Host: localhost
   Port: 6379
-  Password: 886364
+  Password: 
 
 Etcd:
   Host: localhost

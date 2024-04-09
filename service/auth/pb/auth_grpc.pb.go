@@ -22,7 +22,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthServiceClient interface {
-	GetToken(ctx context.Context, in *GetTokenRequset, opts ...grpc.CallOption) (*Token, error)
+	GetToken(ctx context.Context, in *GetTokenRequest, opts ...grpc.CallOption) (*Token, error)
 	VerifyToken(ctx context.Context, in *Token, opts ...grpc.CallOption) (*VerifyTokenResponse, error)
 }
 
@@ -34,7 +34,7 @@ func NewAuthServiceClient(cc grpc.ClientConnInterface) AuthServiceClient {
 	return &authServiceClient{cc}
 }
 
-func (c *authServiceClient) GetToken(ctx context.Context, in *GetTokenRequset, opts ...grpc.CallOption) (*Token, error) {
+func (c *authServiceClient) GetToken(ctx context.Context, in *GetTokenRequest, opts ...grpc.CallOption) (*Token, error) {
 	out := new(Token)
 	err := c.cc.Invoke(ctx, "/pb.AuthService/GetToken", in, out, opts...)
 	if err != nil {
@@ -56,7 +56,7 @@ func (c *authServiceClient) VerifyToken(ctx context.Context, in *Token, opts ...
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility
 type AuthServiceServer interface {
-	GetToken(context.Context, *GetTokenRequset) (*Token, error)
+	GetToken(context.Context, *GetTokenRequest) (*Token, error)
 	VerifyToken(context.Context, *Token) (*VerifyTokenResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
@@ -65,7 +65,7 @@ type AuthServiceServer interface {
 type UnimplementedAuthServiceServer struct {
 }
 
-func (UnimplementedAuthServiceServer) GetToken(context.Context, *GetTokenRequset) (*Token, error) {
+func (UnimplementedAuthServiceServer) GetToken(context.Context, *GetTokenRequest) (*Token, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetToken not implemented")
 }
 func (UnimplementedAuthServiceServer) VerifyToken(context.Context, *Token) (*VerifyTokenResponse, error) {
@@ -85,7 +85,7 @@ func RegisterAuthServiceServer(s grpc.ServiceRegistrar, srv AuthServiceServer) {
 }
 
 func _AuthService_GetToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetTokenRequset)
+	in := new(GetTokenRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -97,7 +97,7 @@ func _AuthService_GetToken_Handler(srv interface{}, ctx context.Context, dec fun
 		FullMethod: "/pb.AuthService/GetToken",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).GetToken(ctx, req.(*GetTokenRequset))
+		return srv.(AuthServiceServer).GetToken(ctx, req.(*GetTokenRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

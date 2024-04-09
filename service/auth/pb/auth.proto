@@ -5,11 +5,11 @@ package pb;
 option go_package = "service/auth/pb";
 
 service AuthService {
-    rpc GetToken(GetTokenRequset) returns (Token);
+    rpc GetToken(GetTokenRequest) returns (Token);
     rpc VerifyToken(Token) returns (VerifyTokenResponse);
 }
 
-message GetTokenRequset {
+message GetTokenRequest {
     uint64 userId = 1;
 }
 

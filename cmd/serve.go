@@ -23,6 +23,7 @@ package cmd
 
 import (
 	"fmt"
+	"mygomall/service/auth"
 	"mygomall/service/user"
 
 	"github.com/spf13/cobra"
@@ -46,6 +47,8 @@ to quickly create a Cobra application.`,
 		switch args[0] {
 		case "user":
 			user.RunUserService(port)
+		case "auth":
+			auth.RunAuthService(port)
 		}
 	},
 }
